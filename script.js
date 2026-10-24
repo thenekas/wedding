@@ -71,7 +71,34 @@ function updateCountdown() {
 updateCountdown();
 window.setInterval(updateCountdown, 1000);
 
-document.documentElement.classList.add("js", "motion-ready");
+const FONT_WAIT_LIMIT_MS = 3000;
+const FONT_SAMPLE_TEXT = "АаЯяAa0123456789";
+const PAGE_FONTS = [
+  '400 1em "Cormorant Garamond"',
+  '500 1em "Cormorant Garamond"',
+  '600 1em "Cormorant Garamond"',
+  '400 1em "Great Vibes"',
+  '300 1em "Montserrat"',
+  '400 1em "Montserrat"',
+  '500 1em "Montserrat"'
+];
+
+function waitForFonts() {
+  if (!document.fonts) return Promise.resolve();
+  const fontsLoaded = Promise.all(PAGE_FONTS.map((font) => document.fonts.load(font, FONT_SAMPLE_TEXT)))
+    .then(() => document.fonts.ready)
+    .catch((error) => console.warn("Шрифты не загрузились, показываем запасные:", error));
+  const timeLimit = new Promise((resolve) => window.setTimeout(resolve, FONT_WAIT_LIMIT_MS));
+  return Promise.race([fontsLoaded, timeLimit]);
+}
+
+// Анимация первого экрана стартует только когда страница стала видимой
+waitForFonts().then(() => {
+  document.documentElement.classList.remove("fonts-loading");
+  document.documentElement.classList.add("motion-ready");
+});
+
+document.documentElement.classList.add("js");
 const revealItems = document.querySelectorAll(".section__inner > *, .marquee-strip");
 revealItems.forEach((item) => item.classList.add("reveal-item"));
 

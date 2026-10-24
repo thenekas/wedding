@@ -10,6 +10,28 @@
   --shadow: 0 24px 60px rgba(78, 51, 40, 0.12);
 }
 
+/* Пока шрифты грузятся, страница скрыта — текст не прыгает */
+html {
+  background-color: var(--bg);
+}
+
+.page-shell {
+  transition: opacity 0.5s ease;
+}
+
+.fonts-loading .page-shell,
+.fonts-loading .music-button {
+  opacity: 0;
+  /* Страховка: если script.js упадёт, страница всё равно появится */
+  animation: fonts-fallback-show 0.5s ease 4s forwards;
+}
+
+@keyframes fonts-fallback-show {
+  to {
+    opacity: 1;
+  }
+}
+
 /* ===== Памирская тема шаблона ===== */
 :root {
   --pamiri-red: #8f1724;
